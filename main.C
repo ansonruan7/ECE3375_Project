@@ -2,9 +2,6 @@
 	
 //pointers
 volatile unsigned int *hex_ptr = (unsigned int *)HEX3_HEX0_BASE;
-volatile unsigned int *hex1_ptr = (unsigned int *)HEX3_HEX0_BASE;
-volatile unsigned int *hex2_ptr = (unsigned int *)HEX3_HEX0_BASE;
-volatile unsigned int *hex3_ptr = (unsigned int *)HEX3_HEX0_BASE;
 
 //hex numbers
 const int hexDigits[10] = {
@@ -22,16 +19,15 @@ const int hexDigits[10] = {
 
 //display hex
 void DisplayHex(int value){
-}
-
-//get hex
-int getHex(int value){
-	return hexDigits[value];
+	int tens = hexDigits[value/10];
+	int ones = hexDigits[value%10];
+	
+	*hex_ptr = (tens << 24) | (ones << 16) | (0x63 << 8) | 0x39;
 }
 
 //main
 int main(void){
-	*hex_ptr = (hexDigits[1] << 16) |
-			  	  (hexDigits[2] << 8) | 
-			       hexDigits[0];
+	//DisplayHex(24);
+	
+	DisplayHex(6);
 }
