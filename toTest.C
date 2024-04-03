@@ -28,59 +28,30 @@ int convertADCToTemp(unsigned int adc_result) {
 
     int temperature = (voltage_over_potentiometer_voltage * range / 100) + min_temp;
 
-    // Convert temperature to integer
-    int temp_int = (int) temperature;
-    return temp_int;
+    return temperature;
 }
 
 // Convert ADC result to wind speed
 int convertADCToWindSpeed(unsigned int adc_result) {
     // Convert ADC result to voltage
-    float potentiometer_voltage = 3.3;
-    float voltage = (adc_result / 4095.0) * potentiometer_voltage;
+    int potentiometer_voltage = 3300;
+    float voltage_float = (adc_result / 4095.0) * potentiometer_voltage;
+    int voltage = (int) voltage_float;
 
     // Convert voltage to wind speed
     int max_wind_speed = 200;
-    float wind_speed = (voltage / potentiometer_voltage) * max_wind_speed;
 
-    // Convert wind speed to integer
-    int wind_speed_int = (int) wind_speed;
-    return wind_speed_int;
-}
+    int voltage_over_potentiometer_voltage = voltage * 100 / potentiometer_voltage;
 
-// Calculate exponents without libraries
-double absolute(double num) {
-    return (num > 0) ? num : -num;
-}
+    int wind_speed = voltage_over_potentiometer_voltage * max_wind_speed / 100;
 
-double power(double base, double exponent) {
-    if(exponent == 0) {
-        return 1;
-    }
-
-    double temp = power(base, exponent / 2);
-
-    if ((int)exponent % 2 == 0) {
-        return temp * temp;
-    } else {
-        if(exponent > 0) {
-            return base * temp * temp;
-        } else {
-            return (temp * temp) / base;
-        }
-    }
-}
-
-double precisePower(double base, double exponent) {
-    double result = power(base, (int)exponent);
-    double fractionalPart = power(base, exponent - (int)exponent);
-    return result * fractionalPart;
+    return wind_speed;
 }
 
 // Calculate wind chill from temperature and wind speed 
 int calculateWindChill(int temperature, int wind_speed) {
     // Calculate wind chill
-    float wind_chill = 13.12 + 0.6215 * temperature - 11.37 * precisePower(wind_speed, 0.16) + 0.3965 * temperature * precisePower(wind_speed, 0.16);
+    float wind_chill = 13.12 + 0.6215 * temperature - 11.37 * pow(wind_speed, 0.16) + 0.3965 * temperature * pow(wind_speed, 0.16);
 
     // Convert wind chill to integer
     int wind_chill_int = (int) wind_chill;
