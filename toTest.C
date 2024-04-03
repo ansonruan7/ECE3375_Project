@@ -95,23 +95,6 @@ int main(void){
     channel0 = 0x00010141;
     channel1 = 0x00010000;
 
-    // No Loop
-    // // Input from Channel 0 will represent the temperature
-    // channel_update = channel0 & update_mask;
-    // if (channel_update) {
-    //     temp_value = convertADCToTemp(channel0 & mask12);
-    // }
-    //
-    // // Input from Channel 1 will represent the wind speed
-    // channel_update = channel1 & update_mask;
-    // if (channel_update) {
-    //     wind_speed_value = convertADCToWindSpeed(channel1 & mask12);
-    // }
-    //
-    // // Calculate wind chill and display
-    // int wind_chill = calculateWindChill(temp_value, 0);
-    // DisplayHex(wind_chill);
-
     while(1) {
         // Input from Channel 0 will represent the temperature
         channel0++;
