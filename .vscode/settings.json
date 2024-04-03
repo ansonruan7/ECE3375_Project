@@ -21,8 +21,8 @@
         "*.rex": "rexx",
         "*.rexx": "rexx",
         "main.C": "cpp",
-        "main copy.C": "cpp",
+        "testingInSimulator.C": "cpp",
         "toTest.C": "cpp",
-        "cmath": "cpp"
+        "testInSimulator.C": "cpp"
     }
 }
