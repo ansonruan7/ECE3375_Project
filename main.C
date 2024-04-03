@@ -1,3 +1,4 @@
+#include <cmath>
 #define HEX3_HEX0_BASE        0xFF200020
 #define ADC_BASE 0xFF204000
 #define Mask_12_bits 0x00000FFF
@@ -41,29 +42,14 @@ int convertADCToWindSpeed(unsigned int adc_result) {
     return wind_speed_int;
 }
 
-// Calculate x to the power of y
-float power(float x, float y) {
-     if(y == 0) {
-         return 1;
-     } else if(y < 0) {
-         return 1 / power(x, -y);
-     } else {
-         float result = x;
-         for(int i = 1; i < y; i++) {
-             result *= x;
-         }
-         return result;
-     }
-}
-
 // Calculate wind chill from temperature and wind speed 
 int calculateWindChill(int temperature, int wind_speed) {
-     // Calculate wind chill
-     float wind_chill = 13.12 + 0.6215 * temperature - 11.37 * power(wind_speed, 0.16) + 0.3965 * temperature * power(wind_speed, 0.16);
+    // Calculate wind chill
+    float wind_chill = 13.12 + 0.6215 * temperature - 11.37 * std::pow(wind_speed, 0.16) + 0.3965 * temperature * std::pow(wind_speed, 0.16);
 
-     // Convert wind chill to integer
-     int wind_chill_int = (int) wind_chill;
-     return wind_chill_int;
+    // Convert wind chill to integer
+    int wind_chill_int = (int) wind_chill;
+    return wind_chill_int;
 }
 
 //hex numbers
