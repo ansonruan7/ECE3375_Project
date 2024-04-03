@@ -15,13 +15,18 @@ volatile int channel0, channel1, channel_update, temp_value, wind_speed_value;
 // Convert ADC result to temperature
 int convertADCToTemp(unsigned int adc_result) {
     // Convert ADC result to voltage
-    float potentiometer_voltage = 3.3;
-    float voltage = (adc_result / 4095.0) * potentiometer_voltage;
+    int potentiometer_voltage = 3300;
+    float voltage_float = (adc_result / 4095.0) * potentiometer_voltage;
+    int voltage = (int) voltage_float;
 
     // Convert voltage to temperature
     int max_temp = 50;
     int min_temp = -40;
-    float temperature = (voltage / potentiometer_voltage) * max_temp - min_temp;
+
+    int voltage_over_potentiometer_voltage = voltage * 100 / potentiometer_voltage;
+    int range = max_temp - min_temp;
+
+    int temperature = (voltage_over_potentiometer_voltage * range / 100) + min_temp;
 
     // Convert temperature to integer
     int temp_int = (int) temperature;
@@ -98,22 +103,17 @@ const int hexDigits[10] = {
 
 //display hex
 void DisplayHex(int value) {
-    if (value >= 0) {
-        int sign = 0x00;
-        if (value < 0) {
-            sign = 0x40;    // Display a negative sign
-            value = -value;
-        }
-
-        int tens = hexDigits[value / 10];
-        int ones = hexDigits[value % 10];
-        
-        *hex_ptr = (tens << 24) | (ones << 16) | (0x63 << 8) | 0x39;
-        *hex_ptr2 = sign;
-    } else {
-        *hex_ptr = 0x6F6F6F6F;
-        *hex_ptr2 = 0x6F6F6F6F;
+    int sign = 0x00;
+    if (value < 0) {
+        sign = 0x40;    // Display a negative sign
+        value = -value;
     }
+
+    int tens = hexDigits[value / 10];
+    int ones = hexDigits[value % 10];
+    
+    *hex_ptr = (tens << 24) | (ones << 16) | (0x63 << 8) | 0x39;
+    *hex_ptr2 = sign;
 }
 
 //main
@@ -121,12 +121,29 @@ int main(void){
     // Set all channels to auto-update
     *(ADC_BASE_ptr + 1) = 1;
 
-    channel0 = 0x00010000;
+    channel0 = 0x00010141;
     channel1 = 0x00010000;
+
+    // No Loop
+    // // Input from Channel 0 will represent the temperature
+    // channel_update = channel0 & update_mask;
+    // if (channel_update) {
+    //     temp_value = convertADCToTemp(channel0 & mask12);
+    // }
+    //
+    // // Input from Channel 1 will represent the wind speed
+    // channel_update = channel1 & update_mask;
+    // if (channel_update) {
+    //     wind_speed_value = convertADCToWindSpeed(channel1 & mask12);
+    // }
+    //
+    // // Calculate wind chill and display
+    // int wind_chill = calculateWindChill(temp_value, 0);
+    // DisplayHex(wind_chill);
 
     while(1) {
         // Input from Channel 0 will represent the temperature
-        // channel0++;
+        channel0++;
         if (channel0 > 0x00010FFF) {
             channel0 = 0x00010000;
         }
@@ -147,9 +164,9 @@ int main(void){
 
         // Calculate wind chill and display
         int wind_chill = calculateWindChill(temp_value, wind_speed_value);
-        DisplayHex(temp_value);
+        DisplayHex(wind_chill);
 
         // Delay
-        for(int i = 0; i < 100000; i++) {}
+        for(int i = 0; i < 10000; i++) {}
     }
 }
