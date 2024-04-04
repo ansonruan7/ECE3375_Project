@@ -92,9 +92,10 @@ int main(void){
     // Set all channels to auto-update
     *(ADC_BASE_ptr + 1) = 1;
 
-    channel0 = 0x00010141;
+    channel0 = 0x00010000;
     channel1 = 0x00010000;
 
+    // Increments the ADC values to simulate the temperature and wind speed
     while(1) {
         // Input from Channel 0 will represent the temperature
         channel0++;
