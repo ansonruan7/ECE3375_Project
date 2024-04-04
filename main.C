@@ -1,4 +1,3 @@
-#include <cmath>
 #define HEX3_HEX0_BASE        0xFF200020
 #define HEX5_HEX4_BASE        0xFF200030
 #define ADC_BASE 0xFF204000
@@ -49,10 +48,20 @@ int convertADCToWindSpeed(unsigned int adc_result) {
     return wind_speed;
 }
 
+// Calculate exponents without libraries
+float customPower(float base, float exp) {
+	if (base < 1) {
+		return 0;
+	}
+	
+	float output = (2.333 / 200.0) * base;
+    return output;
+}
+
 // Calculate wind chill from temperature and wind speed 
 int calculateWindChill(int temperature, int wind_speed) {
     // Calculate wind chill
-    float wind_chill = 13.12 + 0.6215 * temperature - 11.37 * pow(wind_speed, 0.16) + 0.3965 * temperature * pow(wind_speed, 0.16);
+    float wind_chill = 13.12 + 0.6215 * temperature - 11.37 * customPower(wind_speed, 0.16) + 0.3965 * temperature * customPower(wind_speed, 0.16);
 
     // Convert wind chill to integer
     int wind_chill_int = (int) wind_chill;
@@ -93,21 +102,23 @@ int main(void){
     // Set all channels to auto-update
     *(ADC_BASE_ptr + 1) = 1;
 
-    // Input from Channel 0 will represent the temperature
-    channel0 = *(ADC_BASE_ptr);
-    channel_update = channel0 & update_mask;
-    if (channel_update) {
-        temp_value = convertADCToTemp(channel0 & mask12);
-    }
+	while(1) {
+		// Input from Channel 0 will represent the temperature
+		channel0 = *(ADC_BASE_ptr);
+		channel_update = channel0 & update_mask;
+		if (channel_update) {
+			temp_value = convertADCToTemp(channel0 & mask12);
+		}
 
-    // Input from Channel 1 will represent the wind speed
-    channel1 = *(ADC_BASE_ptr + 1);
-    channel_update = channel1 & update_mask;
-    if (channel_update) {
-        wind_speed_value = convertADCToWindSpeed(channel1 & mask12);
-    }
+		// Input from Channel 1 will represent the wind speed
+		channel1 = *(ADC_BASE_ptr + 1);
+		channel_update = channel1 & update_mask;
+		if (channel_update) {
+			wind_speed_value = convertADCToWindSpeed(channel1 & mask12);
+		}
 
-    // Calculate wind chill and display
-    int wind_chill = calculateWindChill(temp_value, wind_speed_value);
-    DisplayHex(wind_chill);
+		// Calculate wind chill and display
+		int wind_chill = calculateWindChill(temp_value, wind_speed_value);
+		DisplayHex(wind_chill);
+	}
 }
