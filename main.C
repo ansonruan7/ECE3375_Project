@@ -39,7 +39,7 @@ int convertADCToWindSpeed(unsigned int adc_result) {
     int voltage = (int) voltage_float;
 
     // Convert voltage to wind speed
-    int max_wind_speed = 200;
+    int max_wind_speed = 144;
 
     int voltage_over_potentiometer_voltage = voltage * 100 / potentiometer_voltage;
 
